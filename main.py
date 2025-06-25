@@ -1,9 +1,12 @@
 import logging
-import asyncio
 from telegram import Update
 from telegram.ext import (
-    ApplicationBuilder, CommandHandler, MessageHandler, filters,
-    CallbackQueryHandler, ContextTypes
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+    filters
 )
 from config import BOT_TOKEN, WEBHOOK_URL
 from commands import start, handle_buttons
@@ -20,8 +23,8 @@ async def main():
     app.add_handler(MessageHandler(filters.Document.ALL | filters.PHOTO | filters.VIDEO, handle_file_to_code))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_code_to_file))
 
+    # Thiết lập webhook và chạy
     await app.bot.set_webhook(WEBHOOK_URL)
-
     await app.run_webhook(
         listen="0.0.0.0",
         port=10000,
@@ -29,4 +32,5 @@ async def main():
     )
 
 if __name__ == "__main__":
+    import asyncio
     asyncio.run(main())
