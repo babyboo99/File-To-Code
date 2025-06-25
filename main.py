@@ -1,27 +1,34 @@
+import asyncio
 from telegram.ext import ApplicationBuilder
-from config import BOT_TOKEN, WEBHOOK_URL
-from pack_handler import pack_command, pack_callback_handler, handle_pack_media, auto_finalize
-from single_handler import single_command, handle_single_media
+
+from commands import start_command, help_command, code_command
+from single import single_handler
+from pack import pack_handler
 from menu import setup_persistent_menu
-from telegram.ext import CommandHandler, CallbackQueryHandler, MessageHandler, filters
+from config import BOT_TOKEN, WEBHOOK_URL
 
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+async def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-# Lệnh /Pack và xử lý media tương ứng
-app.add_handler(CommandHandler("pack", pack_command))
-app.add_handler(CallbackQueryHandler(pack_callback_handler, pattern="^(pack_continue|pack_finish)$"))
-app.add_handler(MessageHandler(filters.ALL & (~filters.COMMAND), handle_pack_media))
+    # Gán lệnh (Command handlers)
+    app.add_handler(start_command)
+    app.add_handler(help_command)
+    app.add_handler(code_command)
+    app.add_handler(single_handler)
+    app.add_handler(pack_handler)
 
-# Lệnh /Single
-app.add_handler(CommandHandler("single", single_command))
-app.add_handler(MessageHandler(filters.ALL & (~filters.COMMAND), handle_single_media))
+    # Thiết lập menu cố định
+    await setup_persistent_menu(app)
 
-# Cài menu cố định
-setup_persistent_menu(app.bot)
+    # Webhook cho Render
+    await app.bot.set_webhook(url=WEBHOOK_URL)
 
-# Webhook
-app.run_webhook(
-    listen="0.0.0.0",
-    port=8080,
-    webhook_url=WEBHOOK_URL
-)
+    # Chạy bot (dạng webhook)
+    await app.run_webhook(
+        listen="0.0.0.0",
+        port=10000,
+        webhook_url=WEBHOOK_URL
+    )
+
+if __name__ == "__main__":
+    asyncio.run(main())
