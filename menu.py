@@ -1,10 +1,13 @@
-from telegram import BotCommand, BotCommandScopeDefault, MenuButtonCommands
+from telegram import BotCommand, BotCommandScopeDefault
+from telegram.ext import Application
 
-def setup_persistent_menu(bot):
-    bot.set_my_commands([
-        BotCommand("pack", "Gửi nhiều media và lấy mã"),
-        BotCommand("single", "Gửi tối đa 10 media và lấy mã"),
-    ], scope=BotCommandScopeDefault()).
-async def setup_menu(bot):
-    await bot.set_my_commands([...])
-    await bot.set_chat_menu_button(MenuButtonCommands())
+async def setup_persistent_menu(app: Application):
+    commands = [
+        BotCommand("start", "Khởi động bot"),
+        BotCommand("help", "Hướng dẫn sử dụng"),
+        BotCommand("pack", "📤 Gửi nhiều media (Pack Mode)"),
+        BotCommand("single", "📤 Gửi tối đa 10 media (Single Mode)"),
+        BotCommand("code", "📥 Nhập code để lấy lại file"),
+    ]
+
+    await app.bot.set_my_commands(commands, scope=BotCommandScopeDefault())
