@@ -2,18 +2,21 @@ import logging
 import asyncio
 from telegram import Update
 from telegram.ext import (
-    ApplicationBuilder, CommandHandler, MessageHandler,
-    filters, CallbackQueryHandler, ContextTypes
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+    filters
 )
-from config import BOT_TOKEN, WEBHOOK_URL
+from config import BOT_TOKEN
 from commands import start, handle_buttons
 from file_to_code import handle_file_to_code
 from code_to_file import handle_code_to_file
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
+logging.basicConfig(level=logging.INFO)
+
+WEBHOOK_URL = "https://file-to-code.onrender.com"  # <- đã chỉnh
 
 async def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
@@ -23,11 +26,14 @@ async def main():
     app.add_handler(MessageHandler(filters.Document.ALL | filters.PHOTO | filters.VIDEO, handle_file_to_code))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_code_to_file))
 
-    await app.bot.set_webhook(WEBHOOK_URL)
+    # Đặt webhook
+    await app.bot.set_webhook(url=WEBHOOK_URL)
+
+    # Chạy webhook
     await app.run_webhook(
         listen="0.0.0.0",
         port=10000,
-        webhook_url=WEBHOOK_URL,
+        webhook_url=WEBHOOK_URL
     )
 
 if __name__ == "__main__":
