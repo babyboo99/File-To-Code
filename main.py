@@ -15,22 +15,23 @@ from code_to_file import handle_code_to_file
 
 logging.basicConfig(level=logging.INFO)
 
-async def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(handle_buttons))
-    app.add_handler(MessageHandler(filters.Document.ALL | filters.PHOTO | filters.VIDEO, handle_file_to_code))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_code_to_file))
-
-    # Thiết lập webhook và chạy
-    await app.bot.set_webhook(WEBHOOK_URL)
-    await app.run_webhook(
-        listen="0.0.0.0",
-        port=10000,
-        webhook_url=WEBHOOK_URL
-    )
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CallbackQueryHandler(handle_buttons))
+app.add_handler(MessageHandler(filters.Document.ALL | filters.PHOTO | filters.VIDEO, handle_file_to_code))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_code_to_file))
 
 if __name__ == "__main__":
+    # Chạy webhook trực tiếp không dùng async def main
     import asyncio
-    asyncio.run(main())
+
+    async def run():
+        await app.bot.set_webhook(WEBHOOK_URL)
+        await app.run_webhook(
+            listen="0.0.0.0",
+            port=10000,
+            webhook_url=WEBHOOK_URL
+        )
+
+    asyncio.run(run())
