@@ -34,5 +34,5 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     elif query.data == "end":
-    context.user_data.clear()
-    await query.message.reply_text("✅ Phiên làm việc đã kết thúc. Gửi /start để bắt đầu lại.")
+        context.user_data.clear()
+        await query.message.reply_text("✅ Phiên làm việc đã kết thúc. Gửi /start để bắt đầu lại.")
